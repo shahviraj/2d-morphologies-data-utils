@@ -21,7 +21,7 @@ class AIRADataset():
     Supports downloading and visualizing the dataset.
     """
 
-    def __init__(self, dataset_path, dataset_type='tiny', download=True):
+    def __init__(self, dataset_path, dataset_type='tiny', download=False):
         self.dtype = dataset_type
         self.dpath = dataset_path
         if self.dtype == 'tiny':
@@ -30,11 +30,10 @@ class AIRADataset():
             self.data_url = _DATA_URL_HUGE
         if download:
             self.download_dataset(self.dpath)
-        else:
-            try:
-                self.data = h5py.File(self.dpath, mode='r')[_DKEY]
-            except:
-                raise Exception('Unable to open file. Download manually from {}'.format(self.data_url))
+        self.f = h5py.File(self.dpath, mode='r')
+        self.data = self.f[_DKEY]
+        if not self.data:
+            raise Exception('Unable to open file. Download manually from {}'.format(self.data_url))
         self.len = len(self.data)
         
     def download_dataset(self, datapath):
@@ -49,6 +48,10 @@ class AIRADataset():
     
     def __len__(self):
         return self.len
+
+    def __del__(self):
+        # Cleanup
+        self.f.close()
 
     def get_dataset(self):
         return self.data
