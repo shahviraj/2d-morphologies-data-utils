@@ -22,7 +22,7 @@ class AIRADataset():
     """
 
     def __init__(self, dataset_path, dataset_type='tiny', download=True):
-        self.dtype = dataset
+        self.dtype = dataset_type
         self.dpath = dataset_path
         if self.dtype == 'tiny':
             self.data_url = _DATA_URL_TINY
@@ -55,12 +55,14 @@ class AIRADataset():
     
     def show_random_images(self):
         tile_img = self.generate_thumbnails(num_images=16)
-        plt.imshow(tile_img)
+        print(tile_img.shape)
+        plt.imshow(tile_img, cmap='gray')
         plt.show()
 
     def generate_thumbnails(self, num_images=16):
         random_indices = list(np.random.randint(0, self.len, size=num_images))
         r_imgs = np.array([np.pad(self.data[idx].reshape((_IMG_SIZE, _IMG_SIZE)), ((5,5),(5,5)), mode='constant', constant_values=((0,0),(0,0))) for idx in random_indices])
+        r_imgs = r_imgs.reshape((4,4,_IMG_SIZE+10, _IMG_SIZE+10))
         tile_img = np.hstack(np.hstack(r_imgs))
         return tile_img    
 
