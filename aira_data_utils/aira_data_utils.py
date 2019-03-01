@@ -10,8 +10,9 @@ import requests
 import h5py
 from matplotlib import pyplot as plt
 
-_DATA_URL_TINY = 'https://drive.google.com/file/d/1VKcANpq428u0_cjssQdTlBuCgmzN4Npc/view?usp=sharing'
-_DATA_URL_HUGE = 'https://drive.google.com/file/d/1VKcANpq428u0_cjssQdTlBuCgmzN4Npc/view?usp=sharing'
+_DATA_URL_HUGE = 'https://zenodo.org/record/2580293/files/2D_binary_morphologies.h5?download=1'
+_DATA_URL_TINY = 'https://zenodo.org/record/2580293/files/2D_binary_morphologies.h5?download=1'
+
 _DKEY = 'morphology'
 _IMG_SIZE = 101
 
