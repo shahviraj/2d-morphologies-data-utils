@@ -9,6 +9,7 @@ import argparse as ap
 import requests
 import h5py
 from matplotlib import pyplot as plt
+from PIL import Image
 
 _DATA_URL_HUGE = 'https://zenodo.org/record/2580293/files/2D_binary_morphologies.h5?download=1'
 _DATA_URL_TINY = 'https://zenodo.org/record/2580293/files/2D_binary_morphologies.h5?download=1'
@@ -22,7 +23,16 @@ class AIRADataset():
     Supports downloading and visualizing the dataset.
     """
 
-    def __init__(self, dataset_path, dataset_type='tiny', download=False):
+    def __init__(self, dataset_path, dataset_type='tiny', download=False, img_size=101):
+        """
+        Params:
+            dataset_path: Path of the stored dataset if download=='False'.
+                          Path to store the downloaded dataset at if download='True'.
+            dataset_type: 'tiny' for the 2d-morph-tiny dataset.
+                          'huge' for the 2d-morph-huge dataset.
+            download: Flag ascertaiing wheter to download dataset or not. Requires dataset path.
+            img_size: integer defining the output size of the samples. Default: 101
+        """
         self.dtype = dataset_type
         self.dpath = dataset_path
         if self.dtype == 'tiny':
@@ -36,6 +46,7 @@ class AIRADataset():
         if not self.data:
             raise Exception('Unable to open file. Download manually from {}'.format(self.data_url))
         self.len = len(self.data)
+        self.img_size = img_size
         
     def download_dataset(self, datapath):
         try:
@@ -44,9 +55,21 @@ class AIRADataset():
         except:
             raise Exception('Unable to download file from {}'.format(self.data_url))
 
-    def __getitem__(self, index):
-        return self.data[index, ...].reshape((_IMG_SIZE, _IMG_SIZE))
-    
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+           sliced_data = self.data[key,...].reshape((-1, _IMG_SIZE, _IMG_SIZE))
+           # print(sliced_data.shape)
+           orig_data = np.asarray([np.array(Image.fromarray(i).resize((self.img_size, self.img_size), resample=Image.LANCZOS)) for i in sliced_data])
+        elif isinstance(key, int):
+            if key < 0:
+                key += self.len
+            if key >= self.len or key < 0:
+                raise IndexError('Index {} out of range'.format(key))
+            orig_data = np.array(Image.fromarray(self.data[key, ...].reshape((_IMG_SIZE, _IMG_SIZE))).resize((self.img_size, self.img_size), resample=Image.LANCZOS))
+        else:
+            raise TypeError('Invalid Argument Type')
+        return orig_data
+
     def __len__(self):
         return self.len
 
@@ -59,32 +82,13 @@ class AIRADataset():
     
     def show_random_images(self):
         tile_img = self.generate_thumbnails(num_images=16)
-        print(tile_img.shape)
         plt.imshow(tile_img, cmap='gray')
         plt.show()
 
     def generate_thumbnails(self, num_images=16):
         random_indices = list(np.random.randint(0, self.len, size=num_images))
-        r_imgs = np.array([np.pad(self.data[idx].reshape((_IMG_SIZE, _IMG_SIZE)), ((5,5),(5,5)), mode='constant', constant_values=((0,0),(0,0))) for idx in random_indices])
-        r_imgs = r_imgs.reshape((4,4,_IMG_SIZE+10, _IMG_SIZE+10))
+        r_imgs = np.array([np.pad(np.array(Image.fromarray(self.data[idx].reshape((_IMG_SIZE, _IMG_SIZE))).resize((self.img_size, self.img_size))),
+                            ((5,5),(5,5)), mode='constant', constant_values=((1,1),(1,1))) for idx in random_indices])
+        r_imgs = r_imgs.reshape((4,4,self.img_size+10, self.img_size+10))
         tile_img = np.hstack(np.hstack(r_imgs))
         return tile_img    
-
-class AIRAAnalysis():
-    """
-    Support basic analysis of dataset
-    """
-
-    def __init__(self, dataset):
-        self.dataset = dataset
-    
-    def p1_histogram(self, idx_range):
-        pass
-    
-    def p2_curve(self, idx):
-        pass
-    
-        
-if __name__ == '__main__':
-
-    dpath = ''
