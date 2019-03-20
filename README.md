@@ -25,3 +25,21 @@ Dataset Size:  34672 images of 101x101 size.(Images stored as flattened row vect
 
 ## Usage:
 
+Kindly refer to our [documentation](http://dice.ece.iastate.edu/img/ch_toolbox.pdf) for detailed API and utilities description. 
+
+## Cite:
+
+bibtex:
+@misc{pokuri_balaji_sesha_sarath_2019_2580293,
+  author       = {Pokuri, Balaji Sesha Sarath and
+                  Shah, Viraj and
+                  Joshi, Ameya and
+                  Hegde, Chinmay and
+                  Sarkar, Soumik and
+                  Ganapathysubramanian, Baskar},
+  title        = {{Binary 2D morphologies of polymer phase separation}},
+  month        = feb,
+  year         = 2019,
+  doi          = {10.5281/zenodo.2580293},
+  url          = {https://doi.org/10.5281/zenodo.2580293}
+}
