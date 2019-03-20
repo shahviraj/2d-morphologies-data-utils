@@ -28,8 +28,8 @@ Dataset Size:  34672 images of 101x101 size.(Images stored as flattened row vect
 Kindly refer to our [documentation](http://dice.ece.iastate.edu/img/ch_toolbox.pdf) for detailed API and utilities description. 
 
 ## Cite:
-```
 bibtex:
+```
 @misc{pokuri_balaji_sesha_sarath_2019_2580293,
   author       = {Pokuri, Balaji Sesha Sarath and
                   Shah, Viraj and
